@@ -1,0 +1,19 @@
+{
+  "name": "nwhacks-backend",
+  "version": "1.0.0",
+  "description": "Backend system for nwHacks 2019 project.",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/raimckenzie/nwHacks2019.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raimckenzie/nwHacks2019/issues"
+  },
+  "homepage": "https://github.com/raimckenzie/nwHacks2019#readme"
+}

@@ -1,2 +1,2 @@
 # nwHacks2019
-Boilerplate
+Boilerplate repo for nwHacks2019.

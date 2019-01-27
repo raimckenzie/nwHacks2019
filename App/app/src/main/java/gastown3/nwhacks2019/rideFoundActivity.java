@@ -10,6 +10,7 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 public class rideFoundActivity extends AppCompatActivity {
 
@@ -26,11 +27,15 @@ public class rideFoundActivity extends AppCompatActivity {
         progressView = findViewById(R.id.rideFind_progress);
         Intent intent = new Intent(this, RideEnd.class);
 
-        asyncWait(2000);
+        Button Button = (Button) findViewById(R.id.button_go);
+        Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        showProgress(true);
-
-        asyncWait(5000);
+                showProgress(true);
+                asyncWait(5000);
+            }
+        });
 
         showProgress(false);
 

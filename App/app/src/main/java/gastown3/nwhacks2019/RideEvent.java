@@ -7,19 +7,24 @@ public class RideEvent {
     //This is a class that represents the ride event in the swipe up menu
 
     //this represents the status of the ride: True: trip has started, False: trip is waiting to start
-    public boolean hasStarted;
+    public int hasStarted;
 
     //this represents the start and end points of the ride
-    public LatLng starting;
-    public LatLng ending;
+    public float startLon;
+    public float startLat;
+    public float endLon;
+    public float endLat;
 
     //this represents the username to be displayed
     public String username;
 
-    public RideEvent(boolean status, LatLng start, LatLng end, String username){
+
+    public RideEvent(int status, String username, float startLon, float startLat, float endLon, float endLat){
         this.hasStarted = status;
-        this.starting = start;
-        this.ending = end;
+        this.startLat = startLat;
+        this.startLon = startLon;
+        this.endLat = endLat;
+        this.endLon = endLon;
         this.username = username;
     }
 

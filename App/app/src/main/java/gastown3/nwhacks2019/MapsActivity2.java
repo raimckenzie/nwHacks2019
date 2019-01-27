@@ -121,7 +121,7 @@ public class MapsActivity2 extends AppCompatActivity
         Server s = new Server("http://5bcb1df1.ngrok.io/API/");
         s.getRequests(15,15);
 
-        Button takeHome = (Button) findViewById(R.id.button12);
+        Button takeHome = (Button) findViewById(R.id.button_home_1);
         takeHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,9 +132,7 @@ public class MapsActivity2 extends AppCompatActivity
             }
         });
 
-
     }
-
 
 
 

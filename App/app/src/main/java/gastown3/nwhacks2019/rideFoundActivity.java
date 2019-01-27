@@ -25,22 +25,15 @@ public class rideFoundActivity extends AppCompatActivity {
 
         goodView = findViewById(R.id.textView_ride);
         progressView = findViewById(R.id.rideFind_progress);
-        Intent intent = new Intent(this, RideEnd.class);
 
         Button Button = (Button) findViewById(R.id.button_go);
         Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                showProgress(true);
-                asyncWait(5000);
+                Intent intent = new Intent(rideFoundActivity.this, RideEnd.class);
+                startActivity(intent);
             }
         });
-
-        showProgress(false);
-
-        finish();
-        startActivity(intent);
     }
 
     private void asyncWait(int milli){

@@ -7,7 +7,8 @@
  */
 
 var frequency = 15; //in seconds
-var radius = 150; //in metres
+var radius = 300; //in metres
+var riderMin = 2; //amount of rider requests to create a ride.
 
 const mysql = require("mysql");
 const settings = require("./settings");
@@ -40,7 +41,6 @@ function getCount(radius, lon, lat, callback) {
 	startLocLon >= '${lon_0}' AND startLocLon <= '${lon_1}'
 	AND startLocLat >= '${lat_0}' AND startLocLat <= '${lat_1}'`;
 
-	console.log('Querying with bounds...');
 	conn.query(q, (err, result) => {
 		if (err) {
 			console.log(err);
@@ -59,47 +59,58 @@ function getCount(radius, lon, lat, callback) {
  * @param  {Array} rideRequests	Array of requested rides.
  * @return {[type]}              [description]
  */
-function assignRides(rideRequests) {
-	console.log('Stage One Finished! Continue analysis...');
+function assignRides(callback, rideRequests) {
+	console.log('[1/2] Stage One Finished! Continue analysis...');
 
 	//Sort decreasing by count property
 	rideRequests.sort(function(a, b) {
 		return b['count'] - a['count'];
 	});
 
-	//Iterate over all sorted, counted ride requests for furhter analysis.
-	var y = 0;
-	while (y < rideRequests.length) {
+
+	//Analyze top point with most ride requests if contains more than threashold amount of children.
+	if (rideRequests[0]['requests'].length >= riderMin) {
+
 		//Get midpoint of all contained rides.
-		newPoint = algorithms.midpoint(rideRequests[y]['requests'], 'startLocLat', 'startLocLon');
+		newPoint = algorithms.midpoint(rideRequests[0]['requests'], 'startLocLat', 'startLocLon');
 
 		if (newPoint) { //Skip if has no nested rides / no midpoint calculation was possible
 			//Get ride requests at radius, r from the new midpoint calculated point.
 			getCount(radius, newPoint.lat, newPoint.lon, function(count, results) {
 				requestIDs = results.map(a => a.id); //Ride request IDs that will be included in this "ride".
 
+				console.log('[2/2] Stage Two Finished! Create new ride...');
 				console.log('---Create new Ride with IDs:', requestIDs);
 
-
-				//Remove these captured ride request IDs from main ride requests as they've already been handled by this ride creation.
-
+				if (requestIDs.length != 0) {
+					const q = `UPDATE requests SET status = '2' WHERE id IN (`+requestIDs.join()+`)`;
+					console.log("Updating status of ride requests:", requestIDs);
+					conn.query(q, (err, result) => {
+						if (err) {
+							console.log(err);
+							return;
+						}
+						analyzeRequests(callback);
+						return;
+					});
+				}
 
 			});
 		}
-		y++;
+	} else {
+		console.log('[2/2] Stage Two Finished! Not enough riders for another ride.');
+		callback(); //Done all iterations.
 	}
 
 	return;
 
 }
 
-//Recurring task at frequency.
-//setInterval(function() {
+function analyzeRequests(callback) {
 	console.log("Running...");
 
 	const q = `SELECT * FROM requests WHERE status = '1';`;
 
-	console.log("Querying requests table...");
 	conn.query(q, (err, result) => {
 		if (err) {
 			res.json({
@@ -118,13 +129,22 @@ function assignRides(rideRequests) {
 				p['requests'] = requests;
 				x++;
 				if(x === result.length) {
-					assignRides(result);
+					assignRides(callback, result);
 					return;
 				}
 			});
 		});
 
-		//console.log(result);
 	});
+}
 
+analyzeRequests(function(){
+	console.log('completely done');
+	return;
+});
+
+
+//Recurring task at frequency.
+//setInterval(function() {
+//	analyzeRequests();
 //}, frequency * 1000);

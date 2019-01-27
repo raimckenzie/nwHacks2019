@@ -10,10 +10,11 @@ const settings = require("./settings");
 const app = express();
 
 const Status = Object.freeze({
-	COMPLETED: 0,
-	WAITING: 1,
-	INPROGRESS: 2,
-	DELETED: 3,
+	WAITING: 1, //Waiting for ride to be created.
+	PENDING: 2, //Pending taxi to arrive
+	INPROGRESS: 3, //Ride in progress
+	COMPLETED: 4, //Ride completed
+	DELETED: 0, //Ride deleted
 });
 
 // parse application/x-www-form-urlencoded
@@ -31,7 +32,7 @@ const conn = mysql.createConnection(settings.CONN_INFO);
  * Initial signon request
  * Requires:
  * 	username(string)
- * 
+ *
  * Returns:
  * 	username(string)
  * 	user_id(int)
@@ -53,7 +54,7 @@ app.post("/api/signin", (req, res, next) => {
 	const q = `SELECT * FROM users WHERE username = '${param.username}';`;
 
 	console.log("Querying users table...");
-	
+
 	conn.query(q, (err, result) => {
 		if (err) {
 			res.json({
@@ -63,7 +64,7 @@ app.post("/api/signin", (req, res, next) => {
 			});
 			return;
 		}
-		
+
 		//Check if user already exists by username
 		if (result.length == 0) {
 			const q = `INSERT INTO users (username, rating) VALUES ('${param.username}', 8);`;
@@ -134,7 +135,7 @@ app.post("/api/signin", (req, res, next) => {
  * 	 startLocLat (float)
  *   endLocLon (float)
  *   endLocLat (float)
- *   expire_at (datetime)	
+ *   expire_at (datetime)
  *  }
  */
 app.post("/api/getRequests", (req, res, next) => {
@@ -183,10 +184,10 @@ app.post("/api/getRequests", (req, res, next) => {
 			return;
 		}
 
-		const getRequest = `SELECT * FROM requests WHERE 
+		const getRequest = `SELECT * FROM requests WHERE
 		startLocLon >= ${lon_0} AND startLocLon <= ${lon_1}
 		AND startLocLat >= ${lat_0} AND startLocLat <= ${lat_1}`;
-		
+
 		conn.query(getRequest, (err, result) => {
 			if (err) {
 				console.log(err);
@@ -255,7 +256,7 @@ app.post("/api/requestRide", (req, res, next) => {
 			return;
 		}
 
-		const requestRide = `INSERT INTO requests 
+		const requestRide = `INSERT INTO requests
 		(created_at, startLocLon, startLocLat, endLocLon, endLocLat, expire_at, status) VALUES
 		(${conn.escape(new Date())}, ${startLoc.lon}, ${startLoc.lat}, ${endLoc.lon}, ${endLoc.lat},
 		 ${conn.escape(new Date(Date.now() + param.expires * 60e3))}, ${Status.WAITING})`;
@@ -320,7 +321,7 @@ app.post("/api/getRideInfo", (req, res) => {
 				});
 				return;
 			}
-			
+
 			currentRideID = (typeof result[0] === "undefined") ? null : result[0].currentRideID;
 
 			if (currentRideID === null) {
@@ -333,9 +334,9 @@ app.post("/api/getRideInfo", (req, res) => {
 				});
 				return;
 			}
-	
+
 			const rideQuery = `SELECT * FROM rides WHERE id = ${currentRideID}`;
-	
+
 			conn.query(rideQuery, (err, result) => {
 				if (err) {
 					console.log(err);
@@ -346,7 +347,7 @@ app.post("/api/getRideInfo", (req, res) => {
 					});
 					return;
 				}
-				
+
 				ride = result;
 
 				res.json({

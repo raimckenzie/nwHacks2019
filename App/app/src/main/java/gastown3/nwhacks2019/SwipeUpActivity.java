@@ -13,6 +13,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import gastown3.nwhacks2019.server.Server;
+
 public class SwipeUpActivity extends AppCompatActivity {
 
     private Button refresh;
@@ -29,7 +31,7 @@ public class SwipeUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe_up);
 
-        stringList = new ArrayList<>();
+        setupStringList();
 
         stringAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, stringList);
 
@@ -42,11 +44,12 @@ public class SwipeUpActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
-                view.animate().setDuration(2000).alpha(0)
+                view.animate().setDuration(600).alpha(0)
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
 
+                                //button press functionality
 
                                 view.setAlpha(1);
                             }
@@ -63,6 +66,19 @@ public class SwipeUpActivity extends AppCompatActivity {
                 attemptRefresh();
             }
         });
+
+    }
+
+    //setup String
+    private void setupStringList(){
+        stringList = new ArrayList<>();
+
+        Server mServer = new Server("http://5bcb1df1.ngrok.io/API/");
+        RideEvent[] array = mServer.getRequests();
+
+        for(RideEvent r: array){
+            stringList.add(r.prettyPrint());
+        }
 
     }
 

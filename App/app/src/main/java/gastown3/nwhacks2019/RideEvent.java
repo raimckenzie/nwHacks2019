@@ -26,9 +26,6 @@ public class RideEvent {
     public String expiry;
 
 
-
-
-
     public RideEvent(int UserId, String username, float startLon, float startLat, float endLon, float endLat){
 
         this.startLat = startLat;
@@ -37,6 +34,12 @@ public class RideEvent {
         this.endLon = endLon;
         this.username = username;
         this.UserId = UserId;
+    }
+
+    public String prettyPrint(){
+        return  "USERNAME: " + username + "\n" +
+                "DESTINATION: "+ endLat + endLon + "(Lat,Lon) \n";
+
     }
 
 }

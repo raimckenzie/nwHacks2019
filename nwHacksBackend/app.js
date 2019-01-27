@@ -134,6 +134,8 @@ app.post("/api/signin", (req, res, next) => {
  * Returns:
  * 	Array {
  * 	 id (int)
+ *   user_id (int)
+ *   username (string)
  * 	 status (int)
  *   startLocLon (float)
  * 	 startLocLat (float)
@@ -218,6 +220,7 @@ app.post("/api/getRequests", (req, res, next) => {
  * Submits a request to join or create a new ride
  * Requires:
  *  user_id(int)
+ *  username (string)
  * 	startLoc.lon(float)
  *  startLoc.lat(float)
  * 	endLoc.lon(float)
@@ -228,7 +231,7 @@ app.post("/api/requestRide", (req, res, next) => {
 	const param = req.body;
 
 	if (!("startLoc" in param) || !("endLoc" in param) ||
-		!("expires" in param) || !("user_id" in param)) {
+		!("expires" in param) || !("user_id" in param) || !("username" in param)) {
 		res.json({
 			status: "ERROR",
 			message: "Insufficient parameters provided.",
@@ -263,8 +266,8 @@ app.post("/api/requestRide", (req, res, next) => {
 		}
 
 		const requestRide = `INSERT INTO requests 
-		(user_id, created_at, startLocLon, startLocLat, endLocLon, endLocLat, expire_at, status) VALUES
-		(${param.user_id}, ${conn.escape(new Date())}, ${startLoc.lon}, ${startLoc.lat}, ${endLoc.lon}, ${endLoc.lat},
+		(user_id, username, created_at, startLocLon, startLocLat, endLocLon, endLocLat, expire_at, status) VALUES
+		(${param.user_id}, "${param.username}", ${conn.escape(new Date())}, ${startLoc.lon}, ${startLoc.lat}, ${endLoc.lon}, ${endLoc.lat},
 		 ${conn.escape(new Date(Date.now() + param.expires * 60e3))}, ${Status.WAITING})`;
 
 		conn.query(requestRide, (err) => {

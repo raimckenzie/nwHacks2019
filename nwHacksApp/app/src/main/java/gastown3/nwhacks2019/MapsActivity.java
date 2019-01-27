@@ -103,9 +103,6 @@ public class MapsActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //Start Server
-        mServer = new Server();
-
     }
 
     /**

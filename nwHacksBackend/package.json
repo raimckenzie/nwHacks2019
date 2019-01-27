@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/raimckenzie/nwHacks2019#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "mysql": "^2.16.0"
   },

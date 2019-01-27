@@ -14,7 +14,7 @@ app.listen(port, () => {
 /**
  * Initial signon request
  * Requires:
- * 		username(string)
+ * 	username(string)
  */
 app.get("/api/signin", (req, res, next) => {
 	var param = req.query;
@@ -22,7 +22,7 @@ app.get("/api/signin", (req, res, next) => {
 	if (!('username' in param)) {
 		res.json({
 			status: 'ERROR',
-			message: 'No username specified.',
+			message: 'Insufficient parameters provided.',
 			payload: {},
 		});
 		return;
@@ -39,6 +39,49 @@ app.get("/api/signin", (req, res, next) => {
  		message: 'All good',
 		payload: {
 			userID: userID,
+		},
+ 	});
+	return;
+});
+
+/**
+ * Retrive existing requests nearby
+ * Requires:
+ * 	radius(int)
+ * 	location.lon(float)
+ * 	location.lat(float)
+ */
+app.get("/api/getRequests", (req, res, next) => {
+	var param = req.query;
+
+	if (!('radius' in param)|| !('location' in param)) {
+		res.json({
+			status: 'ERROR',
+			message: 'Insufficient parameters provided.',
+			payload: {},
+		});
+		return;
+	}
+
+	/*
+	TODO: Calculate max/min border for db search query of location.
+	 */
+
+	/*
+	TODO: Query db, return valid requests.
+	 */
+
+	var requests = [];
+
+	/*
+	TODO: Return array of requests.
+	 */
+
+	 res.json({
+ 		status: 'OK',
+ 		message: 'All good',
+		payload: {
+			requests: requests,
 		},
  	});
 	return;

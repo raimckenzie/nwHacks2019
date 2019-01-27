@@ -3,6 +3,7 @@ package gastown3.nwhacks2019;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -205,7 +206,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // form field with an error.
             focusView.requestFocus();
         } else {
-
+            Intent intent = new Intent(this, MapsActivity.class);
             //update the strings
             updateStrings();
 
@@ -214,9 +215,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(true);
             mAuthTask = new UserLoginTask(emailString, usernameString, passwordString);
             mAuthTask.execute((Void) null);
+
             finish();
 
-            Intent intent = new Intent(this, HomeAddressActivity.class);
+
             startActivity(intent);
         }
     }

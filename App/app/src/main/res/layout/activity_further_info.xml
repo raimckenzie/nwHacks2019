@@ -21,4 +21,13 @@
         android:text="User Info:"
         android:textColor="#0f3c40"
         android:textSize="22sp" />
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingTop="50dp"
+        android:text="@string/username"
+        android:textColor="#0f3c40"
+        android:textSize="22sp" />
 </LinearLayout>

@@ -46,7 +46,7 @@ import gastown3.nwhacks2019.server.ServerConnectionException;
 /**
  * An activity that displays a map showing the place at the device's current location.
  */
-public class MapsActivity extends AppCompatActivity
+public class MapsActivity2 extends AppCompatActivity
         implements OnMapReadyCallback, RoutingListener{
 
     private static final String TAG = MapsActivity.class.getSimpleName();
@@ -143,7 +143,7 @@ public class MapsActivity extends AppCompatActivity
 
             if(e2.getX() != e1.getX() || e2.getX() != e1.getX()){
                 //any swiping
-                Intent intent = new Intent(MapsActivity.this, SwipeUpActivity.class);
+                Intent intent = new Intent(MapsActivity2.this, SwipeUpActivity.class);
                 finish();
                 startActivity(intent);
             }
@@ -315,7 +315,8 @@ public class MapsActivity extends AppCompatActivity
                             LatLng dest = new LatLng(49.263727, -123.207217);
                             getRouteToMarker(mLatLng, dest);
                             mMap.addMarker(new MarkerOptions().position(dest).title("dest"));
-
+                            Server s = new Server("asdsada");
+                            getRouteToMarker2(s.getRequests());
 
 
                         } else {
@@ -405,3 +406,4 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 }
+

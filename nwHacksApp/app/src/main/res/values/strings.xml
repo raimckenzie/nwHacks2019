@@ -18,4 +18,5 @@
     </string>
     <string name="no_account">"No account yet? Sign up here"
     </string>
+    <string name="select_destination_n_address">Select Destination Address</string>
 </resources>

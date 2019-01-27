@@ -1,12 +1,17 @@
 /**
  * Computations to run every five minutes
+ *
+ * Improvements to be made:
+ * 	Currently a lot of sql queries are made - more than nessesary. Implement some sort of caching, to decrease the server queries.
+ * 	Determine best radius multiplier - currently set to 2 - this was chosen arbitrarily for now.
  */
 
 var frequency = 15; //in seconds
-var radius = 300; //in metres
+var radius = 150; //in metres
 
 const mysql = require("mysql");
 const settings = require("./settings");
+const algorithms = require("./algorithms");
 
 const conn = mysql.createConnection(settings.CONN_INFO);
 
@@ -31,7 +36,7 @@ function getCount(radius, lon, lat, callback) {
 	const lon_0 = lon - (dx / r_earth) * (180 / Math.PI) / Math.cos(lat * Math.PI/180);
 	const lon_1 = lon + (dx / r_earth) * (180 / Math.PI) / Math.cos(lat * Math.PI/180);
 
-	const q = `SELECT count(*) as count FROM requests WHERE
+	const q = `SELECT * FROM requests WHERE
 	startLocLon >= '${lon_0}' AND startLocLon <= '${lon_1}'
 	AND startLocLat >= '${lat_0}' AND startLocLat <= '${lat_1}'`;
 
@@ -41,7 +46,9 @@ function getCount(radius, lon, lat, callback) {
 			console.log(err);
 			return;
 		}
-		callback(result[0]['count']);
+
+		//Add nested locations contained in the region to this location entry.
+		callback(result.length, result);
 		return;
 	});
 
@@ -53,12 +60,34 @@ function getCount(radius, lon, lat, callback) {
  * @return {[type]}              [description]
  */
 function assignRides(rideRequests) {
-	console.log('finished!');
+	console.log('Stage One Finished! Continue analysis...');
 
 	//Sort decreasing by count property
 	rideRequests.sort(function(a, b) {
 		return b['count'] - a['count'];
 	});
+
+	//Iterate over all sorted, counted ride requests for furhter analysis.
+	var y = 0;
+	while (y < rideRequests.length) {
+		//Get midpoint of all contained rides.
+		newPoint = algorithms.midpoint(rideRequests[y]['requests'], 'startLocLat', 'startLocLon');
+
+		if (newPoint) { //Skip if has no nested rides / no midpoint calculation was possible
+			//Get ride requests at radius, r from the new midpoint calculated point.
+			getCount(radius, newPoint.lat, newPoint.lon, function(count, results) {
+				requestIDs = results.map(a => a.id); //Ride request IDs that will be included in this "ride".
+
+				console.log('---Create new Ride with IDs:', requestIDs);
+
+
+				//Remove these captured ride request IDs from main ride requests as they've already been handled by this ride creation.
+
+
+			});
+		}
+		y++;
+	}
 
 	return;
 
@@ -84,8 +113,9 @@ function assignRides(rideRequests) {
 		//Iterate over all requests.
 		var x = 0;
 		result.forEach(function(p) {
-			getCount(radius, p['startLocLon'], p['startLocLat'], function(count){
+			getCount(radius*2, p['startLocLon'], p['startLocLat'], function(count, requests){ //Multiply radius by 2 for better results.
 				p['count'] = count;
+				p['requests'] = requests;
 				x++;
 				if(x === result.length) {
 					assignRides(result);

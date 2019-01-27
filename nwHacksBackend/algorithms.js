@@ -37,12 +37,19 @@ function shortest_path(startLocs, endLocs) {
  * Finds the midpoint
  *
  * @param {Array.<Location>} locs
+ * @param {String} latName		Name of the lat key in object.
+ * @param {String} lonName		Name of the lon key in object.
  *
  * @returns {midpoint<Location>,}
  */
-function shortest_path(locs) {
-	const startLats = locs.map(loc => loc.lat);
-	const startLons = locs.map(loc => loc.lon);
+function midpoint(locs, latName, lonName) {
+
+	if (locs.length == 0) {
+		return null;
+	}
+
+	const lats = locs.map(loc => loc[latName]);
+	const lons = locs.map(loc => loc[lonName]);
 
 	const latAvg = lats.reduce((total, next) => total + next) / lats.length;
 	const lonAvg = lons.reduce((total, next) => total + next) / lons.length;

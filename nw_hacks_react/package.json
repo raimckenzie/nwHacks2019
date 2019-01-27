@@ -6,6 +6,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.2.1",
     "leaflet": "^1.4.0",
+    "leaflet-draw": "^1.0.4",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-leaflet": "^2.2.0",

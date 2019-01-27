@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 const mysql = require("mysql");
 const gps_distance = require("gps-distance");
 const settings = require("./settings");
+const cors = require("cors");
 const app = express();
 
 const Status = Object.freeze({
@@ -26,6 +27,7 @@ const EMISSION_G_PER_K = 118;
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
+app.use(cors());
 
 app.listen(settings.PORT, () => {
 	console.log("Server running on port " + settings.PORT);
@@ -233,6 +235,7 @@ app.post("/api/requestRide", (req, res, next) => {
 
 	if (!("startLoc" in param) || !("endLoc" in param) ||
 		!("expires" in param) || !("user_id" in param) || !("username" in param)) {
+			console.log("username" in param, "user_id" in param, "expires" in param)
 		res.json({
 			status: "ERROR",
 			message: "Insufficient parameters provided.",
@@ -245,6 +248,7 @@ app.post("/api/requestRide", (req, res, next) => {
 	const endLoc = param.startLoc;
 	if (!("lon" in startLoc) || !("lat" in startLoc) ||
 		!("lon" in endLoc) || !("lat" in endLoc)) {
+			console.log('a')
 		res.json({
 			status: "ERROR",
 			message: "Insufficient parameters provided!",

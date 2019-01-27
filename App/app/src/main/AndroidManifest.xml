@@ -37,11 +37,7 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps">
-
-
-        </activity>
-
+            android:label="@string/title_activity_maps"></activity>
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login">
@@ -50,14 +46,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity android:name=".HomeAddressActivity" />
-
-        <activity android:name=".SwipeUpActivity">
-
-        </activity>
+        <activity android:name=".SwipeUpActivity"></activity>
+        <activity android:name=".rideFoundActivity"></activity>
     </application>
 
 </manifest>

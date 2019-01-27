@@ -3,6 +3,7 @@ package gastown3.nwhacks2019;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -11,6 +12,8 @@ import android.app.LoaderManager.LoaderCallbacks;
 
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.Intent;
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -31,6 +34,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 
 import gastown3.nwhacks2019.server.Server;
 
@@ -169,6 +175,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return;
         }
 
+        Intent intent = new Intent(this, MapsActivity.class);
+
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -213,10 +221,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(true);
             mAuthTask = new UserLoginTask(emailString, usernameString, passwordString);
             mAuthTask.execute((Void) null);
-        }
 
-
-
+        startActivity(intent);
 
     }
 
@@ -342,16 +348,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            try {
-                // Simulate network access.
+            try{
                 Thread.sleep(2000);
-
-                //passing the info into
-                Server myServer = new Server(mPassword);
-                myServer.requestSignin(mUsername);
-
-            } catch (Exception e) {
-                return false;
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
             // We dont have a credential system rn
@@ -363,6 +363,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             }
 
+            Timer time = new Timer();
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        Server myServer = new Server(mPassword);
+                        myServer.requestSignin(mUsername);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            long delay = 2000;
+            time.schedule(task,delay);
+
             return true;
         }
 
@@ -370,7 +386,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
                 finish();
             } else {

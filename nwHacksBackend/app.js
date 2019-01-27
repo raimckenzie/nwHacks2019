@@ -503,7 +503,7 @@ app.post("/api/getSavings", (req, res) => {
 					const ride = result[0];
 					const users = [ride.user_1, ride.user_2, ride.user_3, ride.user_4];
 					const numUsers = users.map(user => 
-						(user === null) ? 0 : 1
+						(user === null || user === 0) ? 0 : 1
 					).reduce((total, next) => total + next);
 					
 					const requestDistance = gps_distance(request.startLocLat, request.startLocLon,request.endLocLat, request.endLocLon);
@@ -522,8 +522,8 @@ app.post("/api/getSavings", (req, res) => {
 						status: "OK",
 						message: "All good",
 						payload: {
-							costSavings,
-							emissionSavings,
+							costSavings: Math.abs(costSavings),
+							emissionSavings: Math.abs(emissionSavings),
 						}
 					});
 				});

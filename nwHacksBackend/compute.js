@@ -62,32 +62,32 @@ function getCount(radius, lon, lat, callback) {
  * @return {[type]}              [description]
  */
 function assignRides(callback, rideRequests) {
-	console.log('[1/2] Stage One Finished! Continue analysis...');
+	console.log("[1/2] Stage One Finished! Continue analysis...");
 
 	//Sort decreasing by count property
 	rideRequests.sort(function(a, b) {
-		return b['count'] - a['count'];
+		return b["count"] - a["count"];
 	});
 
 	//Analyze top point with most ride requests if contains more than threashold amount of children.
-	if (rideRequests[0]['requests'].length >= riderMin) {
+	if (rideRequests[0]["requests"].length >= riderMin) {
 
 		//Get midpoint of all contained rides.
-		newPoint = algorithms.midpoint(rideRequests[0]['requests'].slice(0,4), 'startLocLat', 'startLocLon');
-		newPointEnd = algorithms.midpoint(rideRequests[0]['requests'].slice(0,4), 'endLocLat', 'endLocLon');
+		const newPoint = algorithms.midpoint(rideRequests[0]["requests"].slice(0,4), "startLocLat", "startLocLon");
+		const newPointEnd = algorithms.midpoint(rideRequests[0]["requests"].slice(0,4), "endLocLat", "endLocLon");
 
-		if (newPoint) { //Skip if has no nested rides / no midpoint calculation was possible
+		if (newPoint != null) { //Skip if has no nested rides / no midpoint calculation was possible
 			//Get ride requests at radius, r from the new midpoint calculated point.
-			getCount(radius, newPoint.lat, newPoint.lon, function(count, results) {
+			getCount(radius, newPoint.lon, newPoint.lat, function(count, results) {
 				var requestIDs = results.map(a => a.id); //Ride request IDs that will be included in this "ride".
 				var userIDs = results.map(a => a.user_id); //Get requests' user IDs.
 
-				console.log('[2/2] Stage Two Finished! Create new ride...');
-				console.log('---Create new Ride with IDs:', requestIDs.slice(0,4));
+				console.log("[2/2] Stage Two Finished! Create new ride...");
+				console.log("---Create new Ride with IDs:", userIDs.slice(0,4));
 
-				if (requestIDs.length != 0) {
-					var q = `UPDATE requests SET status = '2' WHERE id IN (`+requestIDs.slice(0,4).join()+`);`;
-					console.log("Updating status of ride requests:", requestIDs.slice(0,4));
+				if (userIDs.length != 0) {
+					var q = "UPDATE requests SET status = '2' WHERE user_id IN ("+userIDs.slice(0,4).join()+");";
+					console.log("Updating status of ride requests:", userIDs.slice(0,4));
 					conn.query(q, (err, result) => {
 						if (err) {
 							console.log(err);
@@ -95,24 +95,24 @@ function assignRides(callback, rideRequests) {
 						}
 
 						//Define any empty seats.
-						if (typeof requestIDs[1] === "undefined") {
-							requestIDs[1] = '';
+						if (typeof userIDs[1] === "undefined") {
+							userIDs[1] = "";
 						}
-						if (typeof requestIDs[2] === "undefined") {
-							requestIDs[2] = '';
+						if (typeof userIDs[2] === "undefined") {
+							userIDs[2] = "";
 						}
-						if (typeof requestIDs[3] === "undefined") {
-							requestIDs[3] = '';
+						if (typeof userIDs[3] === "undefined") {
+							userIDs[3] = "";
 						}
 
 						//Add new ride entry.
-						const insert = `INSERT INTO rides (status, startLocLat, startLocLon, endLocLat, endLocLon, user_1, user_2, user_3, user_4) VALUES ('1', '${newPoint.lat}', '${newPoint.lon}', '${newPointEnd.lat}', '${newPointEnd.lon}', '${requestIDs[0]}', '${requestIDs[1]}', '${requestIDs[2]}', '${requestIDs[3]}');`;
+						const insert = `INSERT INTO rides (status, startLocLat, startLocLon, endLocLat, endLocLon, user_1, user_2, user_3, user_4) VALUES ('1', '${newPoint.lat}', '${newPoint.lon}', '${newPointEnd.lat}', '${newPointEnd.lon}', '${userIDs[0]}', '${userIDs[1]}', '${userIDs[2]}', '${userIDs[3]}');`;
 						conn.query(insert, (err, result) => {
 							if (err) {
 								console.log(err);
 								return;
 							}
-							console.log('Added ride!');
+							console.log("Added ride!");
 
 
 							//Return ride ID.
@@ -130,14 +130,14 @@ function assignRides(callback, rideRequests) {
 								var ride_id = result[0]["LAST_INSERT_ID()"];
 								console.log(userIDs);
 								//Update users ride ID.
-								var q = `UPDATE users SET currentRideID = '${ride_id}' WHERE id IN (`+userIDs.slice(0,4).join()+`);`;
+								var q = `UPDATE users SET currentRideID = '${ride_id}' WHERE id IN (`+userIDs.slice(0,4).filter(Boolean).join()+");";
 								console.log(q);
 								conn.query(q, (err, result) => {
 									if (err) {
 										console.log(err);
 										return;
 									}
-									console.log('Updated users');
+									console.log("Updated users");
 									analyzeRequests(callback);
 									return;
 								});
@@ -151,12 +151,12 @@ function assignRides(callback, rideRequests) {
 
 			});
 		} else {
-			console.log('[2/2] Stage Two Finished! Not enough riders for another ride.');
+			console.log("[2/2] Stage Two Finished! Not enough riders for another ride.");
 			callback(); //Done all iterations.
 			return;
 		}
 	} else {
-		console.log('[2/2] Stage Two Finished! Not enough riders for another ride.');
+		console.log("[2/2] Stage Two Finished! Not enough riders for another ride.");
 		callback(); //Done all iterations.
 		return;
 	}
@@ -168,7 +168,7 @@ function assignRides(callback, rideRequests) {
 function analyzeRequests(callback) {
 	console.log("Running...");
 
-	var q = `SELECT * FROM requests WHERE status = '1';`;
+	var q = "SELECT * FROM requests WHERE status = '1';";
 
 	conn.query(q, (err, result) => {
 		if (err) {
@@ -183,9 +183,9 @@ function analyzeRequests(callback) {
 		//Iterate over all requests.
 		let x = 0;
 		result.forEach(function(p) {
-			getCount(radius*2, p['startLocLon'], p['startLocLat'], function(count, requests){ //Multiply radius by 2 for better results.
-				p['count'] = count;
-				p['requests'] = requests;
+			getCount(radius*2, p["startLocLon"], p["startLocLat"], function(count, requests){ //Multiply radius by 2 for better results.
+				p["count"] = count;
+				p["requests"] = requests;
 				x++;
 				if(x === result.length) {
 					assignRides(callback, result);
@@ -201,8 +201,8 @@ function analyzeRequests(callback) {
 setInterval(function() {
 	time_start = Date.now();
 	analyzeRequests(function(){
-		console.log('Computation complete. Took ' + (Date.now() - time_start) + ' ms.');
-		console.log('');
+		console.log("Computation complete. Took " + (Date.now() - time_start) + " ms.");
+		console.log("");
 		return;
 	});
 }, frequency * 1000);

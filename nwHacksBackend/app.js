@@ -63,9 +63,24 @@ app.get("/api/getRequests", (req, res, next) => {
 		return;
 	}
 
-	/*
-	TODO: Calculate max/min border for db search query of location.
-	 */
+	var loc = parma.location;
+	if (!('lon' in loc)|| !('lat' in loc)) {
+		res.json({
+			status: 'ERROR',
+			message: 'Insufficient parameters provided.',
+			payload: {},
+		});
+		return;
+	}
+
+	const r_earth = 6378 * 1000; //Earth radius
+	const dy = dx = param.radius;
+	var lat_0  = loc.lat - (dy / r_earth) * (180 / Math.pi());
+	var lat_1  = loc.lat + (dy / r_earth) * (180 / Math.pi());
+	var new_lon_0 = loc.lon - (dx / r_earth) * (180 / Math.pi()) / cos(loc.lat * Math.pi()/180);
+	var new_lon_1 = loc.lon + (dx / r_earth) * (180 / Math.pi()) / cos(loc.lat * Math.pi()/180);
+
+	//SELECT * FROM requests WHERE startLocLon > lon_0 AND startLocLon < lon_1 AND startLocLat > lat_0 AND startLocLat < lat_1;
 
 	/*
 	TODO: Query db, return valid requests.

@@ -2,8 +2,10 @@ package gastown3.nwhacks2019;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,27 +26,44 @@ public class rideFoundActivity extends AppCompatActivity {
         progressView = findViewById(R.id.rideFind_progress);
         Intent intent = new Intent(this, RideEnd.class);
 
-
-        try {
-            // Simulate network access.
-            Thread.sleep(2000);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        asyncWait(2000);
 
         showProgress(true);
 
-        try {
-            Thread.sleep(6000);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        asyncWait(5000);
 
         showProgress(false);
 
+        finish();
         startActivity(intent);
+    }
+
+    private void asyncWait(int milli){
+
+        rideFoundActivity.waiter wait = new waiter(milli);
+        wait.execute((Void) null);
+
+    }
+
+
+    private class waiter extends AsyncTask<Void, Void, Boolean> {
+
+        private int wait;
+
+        waiter(int wait) {
+            this.wait = wait;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                Thread.sleep(wait);
+
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
     }
 
 

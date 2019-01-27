@@ -206,7 +206,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // form field with an error.
             focusView.requestFocus();
         } else {
-            Intent intent = new Intent(this, MapsActivity.class);
+            Intent intent = new Intent(this, HomeAddressActivity.class);
             //update the strings
             updateStrings();
 
@@ -350,8 +350,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Thread.sleep(2000);
 
                 //passing the info into
-                Server myServer = new Server(mPassword);
-                myServer.requestSignin(mUsername);
+               // Server myServer = new Server(mPassword);
+                //myServer.requestSignin(mUsername);
 
             } catch (Exception e) {
                 return false;

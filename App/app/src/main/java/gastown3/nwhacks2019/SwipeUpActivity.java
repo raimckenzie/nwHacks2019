@@ -54,6 +54,8 @@ public class SwipeUpActivity extends AppCompatActivity {
                                 view.setAlpha(1);
                             }
                         });
+                Intent intent = new Intent(SwipeUpActivity.this, FurtherInfoActivity.class);
+
             }
 
         });

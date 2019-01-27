@@ -37,19 +37,10 @@
 
         <activity
             android:name=".MapsActivity"
-
-            android:label="@string/title_activity_maps">
-
-        </activity>
-
+            android:label="@string/title_activity_maps"></activity>
         <activity
             android:name=".MapsActivity2"
-            android:label="@string/title_activity_maps2">
-
-
-        </activity>
-
-
+            android:label="@string/title_activity_maps2"></activity>
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login">
@@ -60,8 +51,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".HomeAddressActivity" />
-        <activity android:name=".SwipeUpActivity"></activity>
-        <activity android:name=".rideFoundActivity"></activity>
+        <activity android:name=".SwipeUpActivity" />
+        <activity android:name=".rideFoundActivity" />
+        <activity android:name=".FurtherInfoActivity"></activity>
     </application>
 
 </manifest>

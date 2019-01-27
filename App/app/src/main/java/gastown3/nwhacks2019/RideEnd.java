@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 public class RideEnd extends AppCompatActivity {
 
@@ -12,36 +14,15 @@ public class RideEnd extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride_end);
 
-        asyncWait(5000);
+        final Intent intent = new Intent(this, MapsActivity.class);
 
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
-    }
-
-    private void asyncWait(int milli){
-
-        RideEnd.waiter wait = new RideEnd.waiter(milli);
-        wait.execute((Void) null);
-    }
-
-
-    private class waiter extends AsyncTask<Void, Void, Boolean> {
-
-        private int wait;
-
-        waiter(int wait) {
-            this.wait = wait;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                Thread.sleep(wait);
-
-            } catch (Exception e) {
-                return false;
+        Button Button = (Button) findViewById(R.id.button_go);
+        Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+;                finish();
+                startActivity(intent);
             }
-            return true;
-        }
+        });
     }
 }

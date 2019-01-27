@@ -1,0 +1,10 @@
+#taxi-map {
+    height: 800px;
+    width: 100%;
+    position: relative;
+}
+
+.leaflet-container {
+    background-color: white;
+    height: 100% ;
+}

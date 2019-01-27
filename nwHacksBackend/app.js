@@ -6,6 +6,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql");
+const gps_distance = require("gps-distance");
 const settings = require("./settings");
 const app = express();
 
@@ -15,6 +16,10 @@ const Status = Object.freeze({
 	INPROGRESS: 2,
 	DELETED: 3,
 });
+
+const VAN_TAXI_BASE = 3.20;
+const VAN_TAXI_PER_K = 1.84;
+const EMISSION_G_PER_K = 118;
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -212,6 +217,7 @@ app.post("/api/getRequests", (req, res, next) => {
 /**
  * Submits a request to join or create a new ride
  * Requires:
+ *  user_id(int)
  * 	startLoc.lon(float)
  *  startLoc.lat(float)
  * 	endLoc.lon(float)
@@ -221,7 +227,8 @@ app.post("/api/getRequests", (req, res, next) => {
 app.post("/api/requestRide", (req, res, next) => {
 	const param = req.body;
 
-	if (!("startLoc" in param) || !("endLoc" in param) || !("expires" in param)) {
+	if (!("startLoc" in param) || !("endLoc" in param) ||
+		!("expires" in param) || !("user_id" in param)) {
 		res.json({
 			status: "ERROR",
 			message: "Insufficient parameters provided.",
@@ -256,8 +263,8 @@ app.post("/api/requestRide", (req, res, next) => {
 		}
 
 		const requestRide = `INSERT INTO requests 
-		(created_at, startLocLon, startLocLat, endLocLon, endLocLat, expire_at, status) VALUES
-		(${conn.escape(new Date())}, ${startLoc.lon}, ${startLoc.lat}, ${endLoc.lon}, ${endLoc.lat},
+		(user_id, created_at, startLocLon, startLocLat, endLocLon, endLocLat, expire_at, status) VALUES
+		(${param.user_id}, ${conn.escape(new Date())}, ${startLoc.lon}, ${startLoc.lat}, ${endLoc.lon}, ${endLoc.lat},
 		 ${conn.escape(new Date(Date.now() + param.expires * 60e3))}, ${Status.WAITING})`;
 
 		conn.query(requestRide, (err) => {
@@ -270,16 +277,57 @@ app.post("/api/requestRide", (req, res, next) => {
 				});
 				return;
 			}
-		});
 
-		res.json({
-			status: "OK",
-			message: "All good",
-			payload: {},
+			const requestIDQuery = "SELECT LAST_INSERT_ID();";
+
+			conn.query(requestIDQuery, (err, result) => {
+				if (err) {
+					console.log(err);
+					res.json({
+						status: "ERROR",
+						message: "Database error",
+						payload: {},
+					});
+					return;
+				}
+
+				const requestID = result[0]["LAST_INSERT_ID()"];
+
+				const currentRequestIDQuery = `UPDATE users
+				SET currentRequestID = "${requestID}"
+				WHERE id = ${param.user_id}`;
+
+				conn.query(currentRequestIDQuery, (err) => {
+					if (err) {
+						console.log(err);
+						res.json({
+							status: "ERROR",
+							message: "Database error",
+							payload: {},
+						});
+						return;
+					}
+					res.json({
+						status: "OK",
+						message: "All good",
+						payload: {
+							requestID,
+						}
+					});
+				});
+			});
 		});
 	});
 });
 
+/**
+ * Gets info on the current ride
+ * Requires:
+ *  username (string)
+ * 
+ * Returns:
+ * 	ride
+ */
 app.post("/api/getRideInfo", (req, res) => {
 	const param = req.body;
 
@@ -355,6 +403,125 @@ app.post("/api/getRideInfo", (req, res) => {
 					payload: {
 						ride: ride[0],
 					}
+				});
+			});
+		});
+	});
+});
+
+/**
+ * Gets cost and co2 emission savings from the current ride
+ * Requires:
+ *  username (string)
+ * 
+ * Returns:
+ * 	costSavings (float) ($)
+ * 	emissionsSavings (float) (g CO2)
+ */
+app.post("/api/getSavings", (req, res) => {
+	const param = req.body;
+
+	if (!("username" in param)) {
+		res.json({
+			status: "ERROR",
+			message: "Insufficient parameters provided.",
+			payload: {},
+		});
+		return;
+	}
+
+	const username = param.username;
+	const conn = mysql.createConnection(settings.CONN_INFO);
+
+	conn.connect((err) => {
+		if (err) {
+			res.json({
+				status: "ERROR",
+				message: "Database error",
+				payload: {},
+			});
+			return;
+		}
+
+		const currentQuery = `SELECT currentRideID, currentRequestID FROM users
+		WHERE username = "${username}"`;
+
+		conn.query(currentQuery, (err, result) => {
+			if (err) {
+				res.json({
+					status: "ERROR",
+					message: "Database error",
+					payload: {},
+				});
+				return;
+			}
+
+			if (result.length == 0) {
+				res.json({
+					status: "ERROR",
+					message: "User does not exist",
+					payload: {},
+				});
+				return;
+			}
+
+			const { currentRideID, currentRequestID } = result[0];
+
+			const requestQuery = `SELECT
+			startLocLon, startLocLat, endLocLon, endLocLat
+			FROM requests WHERE id = ${currentRequestID}`;
+			const rideQuery = `SELECT
+			startLocLon, startLocLat, endLocLon, endLocLat, user_1, user_2, user_3, user_4
+			FROM rides WHERE id = ${currentRideID}`;
+
+			conn.query(requestQuery, (err, result) => {
+				if (err || result.length == 0) {
+					res.json({
+						status: "ERROR",
+						message: "Database error",
+						payload: {},
+					});
+					return;
+				}
+
+				const request = result[0];
+
+				conn.query(rideQuery, (err, result) => {
+					if (err || result.length == 0) {
+						res.json({
+							status: "ERROR",
+							message: "Database error",
+							payload: {},
+						});
+						return;
+					}
+	
+					const ride = result[0];
+					const users = [ride.user_1, ride.user_2, ride.user_3, ride.user_4];
+					const numUsers = users.map(user => 
+						(user === null) ? 0 : 1
+					).reduce((total, next) => total + next);
+					
+					const requestDistance = gps_distance(request.startLocLat, request.startLocLon,request.endLocLat, request.endLocLon);
+					const rideDistance = gps_distance(ride.startLocLat, ride.startLocLon,		ride.endLocLat, ride.endLocLon);
+
+					const requestCost = VAN_TAXI_BASE + VAN_TAXI_PER_K * requestDistance;
+					const rideCost = (VAN_TAXI_BASE + VAN_TAXI_PER_K * rideDistance) /
+					numUsers * ((numUsers == 1) ? 1 : (requestDistance / rideDistance));
+					const costSavings = requestCost - rideCost;
+
+					const requestEmissions = EMISSION_G_PER_K * requestDistance;
+					const rideEmissions = (EMISSION_G_PER_K * rideDistance) / numUsers;
+					const emissionSavings = (requestEmissions - rideEmissions);
+
+					res.json({
+						status: "OK",
+						message: "All good",
+						payload: {
+							costSavings,
+							emissionSavings,
+						}
+					});
 				});
 			});
 		});

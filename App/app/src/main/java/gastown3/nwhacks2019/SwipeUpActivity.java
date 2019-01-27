@@ -25,7 +25,6 @@ public class SwipeUpActivity extends AppCompatActivity {
     private ArrayList<String> stringList;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

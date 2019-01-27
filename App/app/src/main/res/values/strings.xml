@@ -31,5 +31,6 @@
 
     <!-- String related to otherstuff -->
     <string name="ride_success">SUCCESSFULLY FOUND RIDE</string>
+    <string name="ride_end">Destination arrived, Thanks for using the app!</string>
 
 </resources>

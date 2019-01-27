@@ -3,6 +3,7 @@ package gastown3.nwhacks2019;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,8 +20,31 @@ public class rideFoundActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride_found);
 
+        goodView = findViewById(R.id.textView_ride);
+        progressView = findViewById(R.id.rideFind_progress);
+        Intent intent = new Intent(this, RideEnd.class);
 
 
+        try {
+            // Simulate network access.
+            Thread.sleep(2000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        showProgress(true);
+
+        try {
+            Thread.sleep(6000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        showProgress(false);
+
+        startActivity(intent);
     }
 
 

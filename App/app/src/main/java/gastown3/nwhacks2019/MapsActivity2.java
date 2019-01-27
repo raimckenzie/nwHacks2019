@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.directions.route.AbstractRouting;
@@ -119,6 +121,16 @@ public class MapsActivity2 extends AppCompatActivity
         Server s = new Server("http://5bcb1df1.ngrok.io/API/");
         s.getRequests(15,15);
 
+        Button takeHome = (Button) findViewById(R.id.button12);
+        takeHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(MapsActivity2.this, rideFoundActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
 
     }

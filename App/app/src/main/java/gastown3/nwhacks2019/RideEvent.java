@@ -2,6 +2,8 @@ package gastown3.nwhacks2019;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Date;
+
 public class RideEvent {
 
     //This is a class that represents the ride event in the swipe up menu
@@ -17,15 +19,17 @@ public class RideEvent {
 
     //this represents the username to be displayed
     public String username;
+    public Date expiry;
 
 
-    public RideEvent(int status, String username, float startLon, float startLat, float endLon, float endLat){
+    public RideEvent(int status, String username, float startLon, float startLat, float endLon, float endLat, Date expiry){
         this.hasStarted = status;
         this.startLat = startLat;
         this.startLon = startLon;
         this.endLat = endLat;
         this.endLon = endLon;
         this.username = username;
+        this.expiry = expiry;
     }
 
 

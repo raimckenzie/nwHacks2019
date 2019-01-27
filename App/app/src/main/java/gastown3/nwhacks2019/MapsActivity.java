@@ -159,9 +159,9 @@ public class MapsActivity extends AppCompatActivity
 
             if(e2.getY() > e1.getY()){
                 //enter intent for down to up swipe
-                Intent intent = new Intent(MapsActivity.this, );
-                finish();
-                startActivity(intent);
+//                Intent intent = new Intent(MapsActivity.this, );
+//                finish();
+//                startActivity(intent);
 
             }
 

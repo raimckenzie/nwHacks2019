@@ -315,7 +315,7 @@ public class MapsActivity extends AppCompatActivity
                             LatLng dest = new LatLng(49.263727, -123.207217);
                             getRouteToMarker(mLatLng, dest);
                             mMap.addMarker(new MarkerOptions().position(dest).title("dest"));
-                            
+
 
                         } else {
                             System.out.println("no marker added");

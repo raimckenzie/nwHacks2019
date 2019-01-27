@@ -19,11 +19,13 @@
     <string name="no_account">"No account yet? Sign up here"
     </string>
     <string name="select_destination_n_address">Select Destination Address</string>
+    <string name="enter_address">Enter Default Address</string>
 
 
 
     <!-- String related to swipe up -->
     <string name="refresh_swipe">Resfresh</string>
+    <string name="enter_map">Enter</string>
 
 
 </resources>

@@ -21,8 +21,6 @@ public class SwipeUpActivity extends AppCompatActivity {
     private ArrayAdapter<String> stringAdapter;
     private ArrayList<String> stringList;
 
-    int clickCounter=0;
-    private ListView mListView;
 
 
     @Override

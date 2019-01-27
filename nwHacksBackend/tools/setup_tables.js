@@ -1,20 +1,20 @@
 const mysql = require("mysql");
 
 const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'admin',
-    password: 'admin',
-    database: 'rideshare',
+	host: "localhost",
+	user: "admin",
+	password: "admin",
+	database: "rideshare",
 });
 
 conn.connect((err) => {
-    if (err) {
-        throw err;
-    }
+	if (err) {
+		throw err;
+	}
 
-    console.log('Database connected');
+	console.log("Database connected");
 
-    const usersQuery = `CREATE TABLE IF NOT EXISTS users (
+	const usersQuery = `CREATE TABLE IF NOT EXISTS users (
                             id int NOT NULL AUTO_INCREMENT,
                             username varchar(255) NOT NULL,
                             rating float(4) NOT NULL DEFAULT 5,
@@ -24,14 +24,14 @@ conn.connect((err) => {
                             CONSTRAINT pk PRIMARY KEY (id)
                         )`;
 
-    conn.query(usersQuery, (err) => {
-        if (err) {
-            throw err;
-        }
-        console.log("Users table created");
-    })
+	conn.query(usersQuery, (err) => {
+		if (err) {
+			throw err;
+		}
+		console.log("Users table created");
+	});
 
-    const requestsQuery = `CREATE TABLE IF NOT EXISTS requests (
+	const requestsQuery = `CREATE TABLE IF NOT EXISTS requests (
                             id int NOT NULL AUTO_INCREMENT,
                             status int NOT NULL,
                             created_at datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -43,14 +43,14 @@ conn.connect((err) => {
                             CONSTRAINT pk PRIMARY KEY (id)
                           )`;
 
-    conn.query(requestsQuery, (err) => {
-        if (err) {
-            throw err;
-        }
-        console.log("Requests table created");
-    })
+	conn.query(requestsQuery, (err) => {
+		if (err) {
+			throw err;
+		}
+		console.log("Requests table created");
+	});
 
-    const ridesQuery = `CREATE TABLE IF NOT EXISTS rides (
+	const ridesQuery = `CREATE TABLE IF NOT EXISTS rides (
                             id int NOT NULL AUTO_INCREMENT,
                             status int NOT NULL,
                             startLocLon float(8) NOT NULL,
@@ -64,13 +64,13 @@ conn.connect((err) => {
                             CONSTRAINT pk PRIMARY KEY (id)
                         )`;
 
-    conn.query(ridesQuery, (err) => {
-        if (err) {
-            throw err;
-        }
-        console.log("Rides table created");
-    });
+	conn.query(ridesQuery, (err) => {
+		if (err) {
+			throw err;
+		}
+		console.log("Rides table created");
+	});
 
-    conn.end();
-    console.log("Database closed");
+	conn.end();
+	console.log("Database closed");
 });

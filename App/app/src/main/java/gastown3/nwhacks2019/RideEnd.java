@@ -14,13 +14,12 @@ public class RideEnd extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride_end);
 
-        final Intent intent = new Intent(this, MapsActivity.class);
-
         Button Button = (Button) findViewById(R.id.button_go);
         Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-;                finish();
+                Intent intent = new Intent(RideEnd.this, MapsActivity.class);
+;               finish();
                 startActivity(intent);
             }
         });

@@ -14,7 +14,7 @@ public class RideEnd extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride_end);
 
-        Button Button = (Button) findViewById(R.id.button_go);
+        Button Button = (Button) findViewById(R.id.button_back);
         Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

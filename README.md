@@ -1,2 +1,2 @@
 # WeGo
-Safe, affordable, and easy taxi ridesharing
+Safe, affordable, and sustainable taxi ridesharing

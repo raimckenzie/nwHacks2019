@@ -32,5 +32,18 @@ public class RideEvent {
         this.expiry = expiry;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("USER: ").append(username).append(". /n");
+        sb.append("Destination: ").append(endLat).append("lat ").append(endLon).append("lon. /n");
 
+        if(hasStarted == 1){
+            sb.append("RIDE HAS STARTED");
+        }
+        else{
+            sb.append("RIDE IS WAITING").append(expiry);
+        }
+        return sb.toString();
+    }
 }

@@ -11,17 +11,42 @@
     android:background="@drawable/swipe_up_background"
     >
 
-    <ScrollView
+    <Button
+        android:id="@+id/renew_button"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="30dp"
+        android:background="@drawable/rounded_edges"
+        android:text="@string/refresh_swipe"
+        android:textColor="#97f1f2" />
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        android:fitsSystemWindows="true">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingBottom="56dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:paddingTop="80dp">
 
+            <ListView
+                android:id="@+id/list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+                <EditText
+                    android:id="@+id/edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-
+            </ListView>
 
         </LinearLayout>
 

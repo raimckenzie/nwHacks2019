@@ -141,18 +141,12 @@ public class MapsActivity extends AppCompatActivity
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
-            if(e2.getY() > e1.getY()){
-                //enter intent for down to up swipe
+            if(e2.getX() != e1.getX() || e2.getX() != e1.getX()){
+                //any swiping
                 Intent intent = new Intent(MapsActivity.this, SwipeUpActivity.class);
                 finish();
                 startActivity(intent);
             }
-
-            if(e2.getX() < e1.getX()){
-                //enter intent for left to right swipe
-
-            }
-
             return super.onFling(e1, e2, velocityX, velocityY);
         }
     }

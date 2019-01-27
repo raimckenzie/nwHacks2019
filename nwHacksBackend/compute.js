@@ -41,7 +41,7 @@ function getCount(radius, lon, lat, callback) {
 
 	const q = `SELECT * FROM requests WHERE
 	startLocLon >= '${lon_0}' AND startLocLon <= '${lon_1}'
-	AND startLocLat >= '${lat_0}' AND startLocLat <= '${lat_1}'`;
+	AND startLocLat >= '${lat_0}' AND startLocLat <= '${lat_1}' AND status = '1'`;
 
 	conn.query(q, (err, result) => {
 		if (err) {
@@ -69,39 +69,66 @@ function assignRides(callback, rideRequests) {
 		return b['count'] - a['count'];
 	});
 
-
 	//Analyze top point with most ride requests if contains more than threashold amount of children.
 	if (rideRequests[0]['requests'].length >= riderMin) {
 
 		//Get midpoint of all contained rides.
-		newPoint = algorithms.midpoint(rideRequests[0]['requests'], 'startLocLat', 'startLocLon');
+		newPoint = algorithms.midpoint(rideRequests[0]['requests'].slice(0,4), 'startLocLat', 'startLocLon');
+		newPointEnd = algorithms.midpoint(rideRequests[0]['requests'].slice(0,4), 'endLocLat', 'endLocLon');
 
 		if (newPoint) { //Skip if has no nested rides / no midpoint calculation was possible
 			//Get ride requests at radius, r from the new midpoint calculated point.
 			getCount(radius, newPoint.lat, newPoint.lon, function(count, results) {
-				requestIDs = results.map(a => a.id); //Ride request IDs that will be included in this "ride".
+				var requestIDs = results.map(a => a.id); //Ride request IDs that will be included in this "ride".
 
 				console.log('[2/2] Stage Two Finished! Create new ride...');
-				console.log('---Create new Ride with IDs:', requestIDs);
+				console.log('---Create new Ride with IDs:', requestIDs.slice(0,4));
 
 				if (requestIDs.length != 0) {
-					const q = `UPDATE requests SET status = '2' WHERE id IN (`+requestIDs.join()+`)`;
-					console.log("Updating status of ride requests:", requestIDs);
+					var q = `UPDATE requests SET status = '2' WHERE id IN (`+requestIDs.slice(0,4).join()+`);`;
+					console.log("Updating status of ride requests:", requestIDs.slice(0,4));
 					conn.query(q, (err, result) => {
 						if (err) {
 							console.log(err);
 							return;
 						}
-						analyzeRequests(callback);
+
+						//Define any empty seats.
+						if (typeof requestIDs[1] === "undefined") {
+							requestIDs[1] = '';
+						}
+						if (typeof requestIDs[2] === "undefined") {
+							requestIDs[2] = '';
+						}
+						if (typeof requestIDs[3] === "undefined") {
+							requestIDs[3] = '';
+						}
+
+						const insert = `INSERT INTO rides (status, startLocLat, startLocLon, endLocLat, endLocLon, user_1, user_2, user_3, user_4) VALUES ('1', '${newPoint.lat}', '${newPoint.lon}', '${newPointEnd.lat}', '${newPointEnd.lon}', '${requestIDs[0]}', '${requestIDs[1]}', '${requestIDs[2]}', '${requestIDs[3]}');`;
+
+						conn.query(insert, (err, result) => {
+							if (err) {
+								console.log(err);
+								return;
+							}
+							console.log('Added ride!');
+							analyzeRequests(callback);
+						});
+
 						return;
 					});
 				}
 
 			});
+		} else {
+			console.log('[2/2] Stage Two Finished! Not enough riders for another ride.');
+			callback(); //Done all iterations.
+			return;
 		}
 	} else {
 		console.log('[2/2] Stage Two Finished! Not enough riders for another ride.');
 		callback(); //Done all iterations.
+		return;
 	}
 
 	return;
@@ -111,7 +138,7 @@ function assignRides(callback, rideRequests) {
 function analyzeRequests(callback) {
 	console.log("Running...");
 
-	const q = `SELECT * FROM requests WHERE status = '1';`;
+	var q = `SELECT * FROM requests WHERE status = '1';`;
 
 	conn.query(q, (err, result) => {
 		if (err) {
@@ -124,7 +151,7 @@ function analyzeRequests(callback) {
 		}
 
 		//Iterate over all requests.
-		var x = 0;
+		let x = 0;
 		result.forEach(function(p) {
 			getCount(radius*2, p['startLocLon'], p['startLocLat'], function(count, requests){ //Multiply radius by 2 for better results.
 				p['count'] = count;

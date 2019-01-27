@@ -41,19 +41,23 @@ public class SwipeUpActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, final View view,
-                                    int position, long id) {
+                                    final int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
+                System.out.println("POSITION IS " + position);
                 view.animate().setDuration(600).alpha(0)
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
 
                                 //button press functionality
-
+                                Intent intent = new Intent(SwipeUpActivity.this, FurtherInfoActivity.class);
+                                intent.putExtra("POSITION", position);
+                                finish();
+                                startActivity(intent);
                                 view.setAlpha(1);
                             }
                         });
-                Intent intent = new Intent(SwipeUpActivity.this, FurtherInfoActivity.class);
+
 
             }
 

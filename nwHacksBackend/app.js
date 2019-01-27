@@ -243,7 +243,7 @@ app.post("/api/requestRide", (req, res, next) => {
 				message: "Database error",
 				payload: {},
 			});
-			//conn.end();
+			conn.end();
 			return;
 		}
 
@@ -260,7 +260,7 @@ app.post("/api/requestRide", (req, res, next) => {
 					message: "Database error",
 					payload: {},
 				});
-				//conn.end();
+				conn.end();
 				return;
 			}
 		});

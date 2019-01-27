@@ -1,4 +1,4 @@
-class Position {
+class Location {
 	constructor (lat, lon) {
 		this.lat = lat;
 		this.lon = lon;
@@ -28,12 +28,12 @@ function shortest_path(startLocs, endLocs) {
 	const endLonAvg = endLons.reduce((total, next) => total + next) / endLons.length;
 
 	return {
-		start: new Position(startLatAvg, startLonAvg),
-		end: new Position(endLatAvg, endLonAvg),
+		start: new Location(startLatAvg, startLonAvg),
+		end: new Location(endLatAvg, endLonAvg),
 	};
 }
 
 module.exports = {
-	Position,
+	Location,
 	shortest_path,
 };

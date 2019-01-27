@@ -16,6 +16,7 @@ public class HomeAddressActivity extends AppCompatActivity {
     public void nextPage(View view) {
         Intent intent = new Intent(this, MapsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        finish();
         startActivity(intent);
     }
 }

@@ -215,9 +215,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask.execute((Void) null);
         }
 
-
-
-
     }
 
     private boolean isEmailValid(String email) {

@@ -1,17 +1,21 @@
 package gastown3.nwhacks2019;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -92,6 +96,9 @@ public class MapsActivity extends AppCompatActivity
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
+    //Gesture controls
+    private GestureDetectorCompat gestureObject;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +127,9 @@ public class MapsActivity extends AppCompatActivity
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
+        //start gesture object
+        gestureObject = new GestureDetectorCompat(this, new LearnGesture());
+
         //Start Server
         mServer = new Server("http://c5ce336f.ngrok.io/API/");
         try {
@@ -130,10 +140,41 @@ public class MapsActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-
-
-
     }
+
+    /**
+     * On touch creates an event and tries to read input
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        this.gestureObject.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    //gestureclass
+    class LearnGesture extends GestureDetector.SimpleOnGestureListener{
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            if(e2.getY() > e1.getY()){
+                //enter intent for down to up swipe
+                Intent intent = new Intent(MapsActivity.this, );
+                finish();
+                startActivity(intent);
+
+            }
+
+            if(e2.getX() < e1.getX()){
+                //enter intent for left to right swipe
+
+            }
+
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+    }
+
+
 
     /**
      * Saves the state of the map when the activity is paused.

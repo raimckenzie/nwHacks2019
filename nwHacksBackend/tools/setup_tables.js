@@ -15,7 +15,7 @@ conn.connect((err) => {
     console.log('Database connected');
 
     const usersQuery = `CREATE TABLE IF NOT EXISTS users (
-                            id int NOT NULL,
+                            id int NOT NULL AUTO_INCREMENT,
                             username varchar(255) NOT NULL,
                             rating float(4) NOT NULL DEFAULT 5,
                             currentRideID int,
@@ -32,7 +32,7 @@ conn.connect((err) => {
     })
 
     const requestsQuery = `CREATE TABLE IF NOT EXISTS requests (
-                            id int NOT NULL,
+                            id int NOT NULL AUTO_INCREMENT,
                             status int NOT NULL,
                             created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                             startLocLon float(8) NOT NULL,
@@ -51,7 +51,7 @@ conn.connect((err) => {
     })
 
     const ridesQuery = `CREATE TABLE IF NOT EXISTS rides (
-                            id int NOT NULL,
+                            id int NOT NULL AUTO_INCREMENT,
                             status int NOT NULL,
                             startLocLon float(8) NOT NULL,
                             startLocLat float(8) NOT NULL,

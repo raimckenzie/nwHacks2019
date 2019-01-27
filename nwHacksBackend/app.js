@@ -25,6 +25,8 @@ app.listen(settings.PORT, () => {
 	console.log("Server running on port " + settings.PORT);
 });
 
+const conn = mysql.createConnection(settings.CONN_INFO);
+
 /**
  * Initial signon request
  * Requires:
@@ -51,7 +53,7 @@ app.post("/api/signin", (req, res, next) => {
 	const q = `SELECT * FROM users WHERE username = '${param.username}';`;
 
 	console.log("Querying users table...");
-	const conn = mysql.createConnection(settings.CONN_INFO);
+	
 	conn.query(q, (err, result) => {
 		if (err) {
 			res.json({
@@ -178,7 +180,6 @@ app.post("/api/getRequests", (req, res, next) => {
 				message: "Database error",
 				payload: {},
 			});
-			conn.end();
 			return;
 		}
 
@@ -194,7 +195,6 @@ app.post("/api/getRequests", (req, res, next) => {
 					message: "Database error",
 					payload: {},
 				});
-				conn.end();
 				return;
 			}
 
@@ -206,8 +206,6 @@ app.post("/api/getRequests", (req, res, next) => {
 				},
 			});
 		});
-
-		conn.end();
 	});
 });
 
@@ -254,7 +252,6 @@ app.post("/api/requestRide", (req, res, next) => {
 				message: "Database error",
 				payload: {},
 			});
-			conn.end();
 			return;
 		}
 
@@ -271,7 +268,6 @@ app.post("/api/requestRide", (req, res, next) => {
 					message: "Database error",
 					payload: {},
 				});
-				conn.end();
 				return;
 			}
 		});
@@ -281,8 +277,6 @@ app.post("/api/requestRide", (req, res, next) => {
 			message: "All good",
 			payload: {},
 		});
-
-		conn.end();
 	});
 });
 
@@ -309,7 +303,6 @@ app.post("/api/getRideInfo", (req, res) => {
 				message: "Database error",
 				payload: {},
 			});
-			conn.end();
 			return;
 		}
 
@@ -325,7 +318,6 @@ app.post("/api/getRideInfo", (req, res) => {
 					message: "Database error",
 					payload: {},
 				});
-				conn.end();
 				return;
 			}
 			
@@ -335,9 +327,10 @@ app.post("/api/getRideInfo", (req, res) => {
 				res.json({
 					status: "OK",
 					message: "All good",
-					payload: {},
+					payload: {
+						ride: {},
+					},
 				});
-				conn.end();
 				return;
 			}
 	
@@ -351,7 +344,6 @@ app.post("/api/getRideInfo", (req, res) => {
 						message: "Database error",
 						payload: {},
 					});
-					conn.end();
 					return;
 				}
 				
@@ -364,8 +356,6 @@ app.post("/api/getRideInfo", (req, res) => {
 						ride: ride[0],
 					}
 				});
-
-				conn.end();
 			});
 		});
 	});

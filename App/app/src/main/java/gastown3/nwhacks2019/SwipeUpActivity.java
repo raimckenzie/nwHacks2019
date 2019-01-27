@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,13 +31,32 @@ public class SwipeUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe_up);
 
-        editText = (EditText) findViewById(R.id.edit_text);
         stringList = new ArrayList<>();
 
         stringAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, stringList);
 
         list = (ListView) findViewById(R.id.list_view);
         list.setAdapter(stringAdapter);
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view,
+                                    int position, long id) {
+                final String item = (String) parent.getItemAtPosition(position);
+                view.animate().setDuration(2000).alpha(0)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+
+
+                                view.setAlpha(1);
+                            }
+                        });
+            }
+
+        });
+
 
         refresh = (Button) findViewById(R.id.renew_button);
         refresh.setOnClickListener(new View.OnClickListener() {

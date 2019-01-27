@@ -15,7 +15,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.directions.route.AbstractRouting;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
@@ -27,14 +33,24 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import gastown3.nwhacks2019.server.Server;
+import gastown3.nwhacks2019.server.ServerConnectionException;
+
+
 
 import gastown3.nwhacks2019.server.Server;
 import gastown3.nwhacks2019.server.ServerConnectionException;
@@ -43,9 +59,11 @@ import gastown3.nwhacks2019.server.ServerConnectionException;
  * An activity that displays a map showing the place at the device's current location.
  */
 public class MapsActivity extends AppCompatActivity
-        implements OnMapReadyCallback {
+        implements OnMapReadyCallback, RoutingListener{
 
     private static final String TAG = MapsActivity.class.getSimpleName();
+    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
+    private List<Polyline> polylines;
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;
     private Server mServer;
@@ -68,16 +86,11 @@ public class MapsActivity extends AppCompatActivity
     // location retrieved by the Fused Location Provider.
     private Location mLastKnownLocation;
 
+    private LatLng mLatLng;
+
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
-
-    // Used for selecting the current place.
-    private static final int M_MAX_ENTRIES = 5;
-    private String[] mLikelyPlaceNames;
-    private String[] mLikelyPlaceAddresses;
-    private String[] mLikelyPlaceAttributions;
-    private LatLng[] mLikelyPlaceLatLngs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +130,9 @@ public class MapsActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+
+
+
     }
 
     /**
@@ -151,6 +167,7 @@ public class MapsActivity extends AppCompatActivity
 
         addMarker();
 
+
     }
 
     /**
@@ -170,6 +187,7 @@ public class MapsActivity extends AppCompatActivity
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
+
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
@@ -269,9 +287,16 @@ public class MapsActivity extends AppCompatActivity
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
+                            mLatLng = new LatLng(mLastKnownLocation.getLatitude(),
+                                    mLastKnownLocation.getLongitude());
                             mMap.addMarker(new MarkerOptions().position(new LatLng(mLastKnownLocation.getLatitude(),
                                     mLastKnownLocation.getLongitude())).title("Current Location"));
                             System.out.println("MARKER ADDED");
+                            LatLng dest = new LatLng(49.263727, -123.207217);
+                            getRouteToMarker(mLatLng, dest);
+                            mMap.addMarker(new MarkerOptions().position(dest).title("dest"));
+
+
 
 
                         } else {
@@ -285,5 +310,59 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
+    private void getRouteToMarker(LatLng mLatLng, LatLng dest) {
 
+        Routing routing = new Routing.Builder()
+                .key("AIzaSyAXTY6kU-QrLjrltz3KEvBW3Eq4ibK2jm0")
+                .travelMode(AbstractRouting.TravelMode.DRIVING)
+                .withListener(this)
+                .alternativeRoutes(false)
+                .waypoints(mLatLng, dest)
+                .build();
+        routing.execute();
+    }
+
+
+    @Override
+    public void onRoutingFailure(RouteException e) {
+        if(e != null) {
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(this, "Something went wrong, Try again", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRoutingStart() {
+
+    }
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
+
+
+        polylines = new ArrayList<>();
+        //add route(s) to the map.
+        for (int i = 0; i <route.size(); i++) {
+
+            //In case of more than 5 alternative routes
+            int colorIndex = i % COLORS.length;
+
+            PolylineOptions polyOptions = new PolylineOptions();
+            polyOptions.color(getResources().getColor(COLORS[colorIndex]));
+            polyOptions.width(10 + i * 3);
+            polyOptions.addAll(route.get(i).getPoints());
+            Polyline polyline = mMap.addPolyline(polyOptions);
+            polylines.add(polyline);
+
+            Toast.makeText(getApplicationContext(),"Route "+ (i+1) +": distance - "+ route.get(i).getDistanceValue()+": duration - "+ route.get(i).getDurationValue(),Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+
+    }
 }

@@ -80,6 +80,7 @@ function assignRides(callback, rideRequests) {
 			//Get ride requests at radius, r from the new midpoint calculated point.
 			getCount(radius, newPoint.lat, newPoint.lon, function(count, results) {
 				var requestIDs = results.map(a => a.id); //Ride request IDs that will be included in this "ride".
+				var userIDs = results.map(a => a.user_id); //Get requests' user IDs.
 
 				console.log('[2/2] Stage Two Finished! Create new ride...');
 				console.log('---Create new Ride with IDs:', requestIDs.slice(0,4));
@@ -104,18 +105,47 @@ function assignRides(callback, rideRequests) {
 							requestIDs[3] = '';
 						}
 
+						//Add new ride entry.
 						const insert = `INSERT INTO rides (status, startLocLat, startLocLon, endLocLat, endLocLon, user_1, user_2, user_3, user_4) VALUES ('1', '${newPoint.lat}', '${newPoint.lon}', '${newPointEnd.lat}', '${newPointEnd.lon}', '${requestIDs[0]}', '${requestIDs[1]}', '${requestIDs[2]}', '${requestIDs[3]}');`;
-
 						conn.query(insert, (err, result) => {
 							if (err) {
 								console.log(err);
 								return;
 							}
 							console.log('Added ride!');
-							analyzeRequests(callback);
+
+
+							//Return ride ID.
+							const q = "SELECT LAST_INSERT_ID();";
+							conn.query(q, (err, result) => {
+								if (err) {
+									res.json({
+										status: "ERROR",
+										message: "Database error",
+										payload: {},
+									});
+									return;
+								}
+
+								var ride_id = result[0]["LAST_INSERT_ID()"];
+								console.log(userIDs);
+								//Update users ride ID.
+								var q = `UPDATE users SET currentRideID = '${ride_id}' WHERE id IN (`+userIDs.slice(0,4).join()+`);`;
+								console.log(q);
+								conn.query(q, (err, result) => {
+									if (err) {
+										console.log(err);
+										return;
+									}
+									console.log('Updated users');
+									analyzeRequests(callback);
+									return;
+								});
+
+							});
+
 						});
 
-						return;
 					});
 				}
 

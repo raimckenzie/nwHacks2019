@@ -115,7 +115,10 @@ public class MapsActivity extends AppCompatActivity
         gestureObject = new GestureDetectorCompat(this, new LearnGesture());
 
         //Start Server
-        mServer = new Server("http://c5ce336f.ngrok.io/API/");
+
+        Server s = new Server("http://5bcb1df1.ngrok.io/API/");
+        s.getRequests(15,15);
+        mServer = new Server("http://5bcb1df1.ngrok.io/API/");
         try {
             mServer.requestSignin("asd");
         } catch (MalformedURLException e) {

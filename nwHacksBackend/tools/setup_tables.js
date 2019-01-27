@@ -34,7 +34,7 @@ conn.connect((err) => {
     const requestsQuery = `CREATE TABLE IF NOT EXISTS requests (
                             id int NOT NULL AUTO_INCREMENT,
                             status int NOT NULL,
-                            created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            created_at datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
                             startLocLon float(8) NOT NULL,
                             startLocLat float(8) NOT NULL,
                             endLocLon float(8) NOT NULL,

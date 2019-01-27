@@ -44,19 +44,73 @@ app.post("/api/signin", (req, res, next) => {
 		return;
 	}
 
-	/*
-	TODO: Enter username into database, return userID.
-	 */
+	const q = `SELECT * FROM users WHERE username = '${param.username}';`;
 
-	const userID = 1234;
+	console.log("Querying users table...");
+	const conn = mysql.createConnection(settings.CONN_INFO);
+	conn.query(q, (err, result) => {
+		if (err) {
+			res.json({
+				status: "ERROR",
+				message: "Database error",
+				payload: {},
+			});
+			return;
+		}
+		
+		//Check if user already exists by username
+		if (result.length == 0) {
+			const q = `INSERT INTO users (username, rating) VALUES ('${param.username}', 8);`;
 
-	res.json({
-		status: "OK",
-		message: "All good",
-		payload: {
-			userID: userID,
-		},
+			console.log("Creating new user...");
+			conn.query(q, (err) => {
+				if (err) {
+					res.json({
+						status: "ERROR",
+						message: "Database error",
+						payload: {},
+					});
+					return;
+				}
+
+				//Get new inserted user id.
+				const q = "SELECT LAST_INSERT_ID();";
+
+				conn.query(q, (err, result) => {
+					if (err) {
+						res.json({
+							status: "ERROR",
+							message: "Database error",
+							payload: {},
+						});
+						return;
+					}
+
+					res.json({
+						status: "OK",
+						message: "All good",
+						payload: {
+							username: param.username,
+							userID: result[0]["LAST_INSERT_ID()"]
+						},
+					});
+
+				});
+			});
+
+		} else {
+			res.json({
+				status: "OK",
+				message: "All good",
+				payload: {
+					username: result[0].username,
+					userID: result[0].id,
+				},
+			});
+
+		}
 	});
+
 	return;
 });
 

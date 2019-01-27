@@ -1,6 +1,5 @@
 package gastown3.nwhacks2019;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,16 +8,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.directions.route.AbstractRouting;
@@ -30,17 +23,13 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.PlaceLikelihood;
-import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -50,11 +39,6 @@ import com.google.android.gms.tasks.Task;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import gastown3.nwhacks2019.server.Server;
-import gastown3.nwhacks2019.server.ServerConnectionException;
-
-
 
 import gastown3.nwhacks2019.server.Server;
 import gastown3.nwhacks2019.server.ServerConnectionException;
@@ -159,10 +143,9 @@ public class MapsActivity extends AppCompatActivity
 
             if(e2.getY() > e1.getY()){
                 //enter intent for down to up swipe
-//                Intent intent = new Intent(MapsActivity.this, );
-//                finish();
-//                startActivity(intent);
-
+                Intent intent = new Intent(MapsActivity.this, SwipeUpActivity.class);
+                finish();
+                startActivity(intent);
             }
 
             if(e2.getX() < e1.getX()){
@@ -336,10 +319,6 @@ public class MapsActivity extends AppCompatActivity
                             LatLng dest = new LatLng(49.263727, -123.207217);
                             getRouteToMarker(mLatLng, dest);
                             mMap.addMarker(new MarkerOptions().position(dest).title("dest"));
-
-
-
-
                         } else {
                             System.out.println("no marker added");
                         }

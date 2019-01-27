@@ -50,7 +50,7 @@ public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback, RoutingListener{
 
     private static final String TAG = MapsActivity.class.getSimpleName();
-    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
+    private static final int[] COLORS = new int[]{R.color.material_blue_grey_800, R.color.material_deep_teal_500, R.color.primary_dark_material_light};
     private List<Polyline> polylines;
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;

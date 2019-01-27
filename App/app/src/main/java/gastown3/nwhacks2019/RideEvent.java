@@ -39,19 +39,4 @@ public class RideEvent {
         this.UserId = UserId;
     }
 
-    @Override
-    public String toString() {
-        return "RideEvent{" +
-                "hasStarted=" + hasStarted +
-                ", startLon=" + startLon +
-                ", startLat=" + startLat +
-                ", endLon=" + endLon +
-                ", endLat=" + endLat +
-                ", username='" + username + '\'' +
-                ", expiry='" + expiry + '\'' +
-                ", RequestId=" + RequestId +
-                ", UserId=" + UserId +
-                ", create='" + create + '\'' +
-                '}';
-    }
 }

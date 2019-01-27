@@ -33,4 +33,5 @@ dependencies {
     implementation "com.android.support:support-core-utils:28.0.0"
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.github.jd-alexander:library:1.1.0'
 }

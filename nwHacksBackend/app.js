@@ -12,6 +12,7 @@ app.listen(port, () => {
 });
 
 app.get("/api/signin", (req, res, next) => {
-	res.json(req.params);
+	res.json(req.query);
+	return;
 	//res.json(["Tony","Lisa","Michael","Ginger","Food"]);
 });

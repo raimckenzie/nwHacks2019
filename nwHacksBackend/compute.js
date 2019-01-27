@@ -14,6 +14,8 @@ const mysql = require("mysql");
 const settings = require("./settings");
 const algorithms = require("./algorithms");
 
+var time_start = 0;
+
 const conn = mysql.createConnection(settings.CONN_INFO);
 
 console.log("Running every "+frequency+" seconds...");
@@ -138,8 +140,9 @@ function analyzeRequests(callback) {
 	});
 }
 
+time_start = Date.now();
 analyzeRequests(function(){
-	console.log('completely done');
+	console.log('Computation complete. Took ' + (Date.now() - time_start) + ' ms.');
 	return;
 });
 

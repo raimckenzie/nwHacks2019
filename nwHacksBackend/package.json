@@ -1,0 +1,31 @@
+{
+  "name": "nwhacks-backend",
+  "version": "1.0.0",
+  "description": "Backend system for nwHacks 2019 project.",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node app.js",
+    "lint": "eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/raimckenzie/nwHacks2019.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raimckenzie/nwHacks2019/issues"
+  },
+  "homepage": "https://github.com/raimckenzie/nwHacks2019#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "gps-distance": "0.0.4",
+    "mysql": "^2.16.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.12.1",
+    "jest": "^24.0.0"
+  }
+}

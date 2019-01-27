@@ -34,7 +34,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.net.MalformedURLException;
+
 import gastown3.nwhacks2019.server.Server;
+import gastown3.nwhacks2019.server.ServerConnectionException;
 
 /**
  * An activity that displays a map showing the place at the device's current location.
@@ -102,6 +105,16 @@ public class MapsActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //Start Server
+        mServer = new Server("http://c5ce336f.ngrok.io/API/");
+        try {
+            mServer.requestSignin("asd");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (ServerConnectionException e) {
+            e.printStackTrace();
+        }
 
     }
 

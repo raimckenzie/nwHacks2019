@@ -17,7 +17,8 @@
         android:layout_height="30dp"
         android:background="@drawable/rounded_edges"
         android:text="@string/refresh_swipe"
-        android:textColor="#97f1f2" />
+        android:textColor="#97f1f2"
+        android:onClick="addRoutes"/>
 
     <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"

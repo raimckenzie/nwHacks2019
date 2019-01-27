@@ -97,8 +97,13 @@ public class SwipeUpActivity extends AppCompatActivity {
     public void onBackPressed(){
         super.onBackPressed();
         this.finish();
-        Intent intent = new Intent(SwipeUpActivity.this, MapsActivity.class);
+        Intent intent = new Intent(SwipeUpActivity.this, MapsActivity2.class);
         startActivity(intent);
     }
 
+    public void addRoutes(View view) {
+        this.finish();
+        Intent intent = new Intent(SwipeUpActivity.this, MapsActivity2.class);
+        startActivity(intent);
+    }
 }

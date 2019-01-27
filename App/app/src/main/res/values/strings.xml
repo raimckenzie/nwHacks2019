@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">NWHacks2019</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps2">Map2</string>
     <string name="title_activity_login">Sign in</string>
+
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -18,7 +20,7 @@
     </string>
     <string name="no_account">"No account yet? Sign up here"
     </string>
-    <string name="select_destination_n_address">Select Destination Address</string>
+    <string name="select_destination_n_address">Swipe Up to See Other Rides</string>
     <string name="enter_address">Enter Default Address</string>
 
 

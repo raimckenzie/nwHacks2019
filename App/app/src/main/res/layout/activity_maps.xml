@@ -10,7 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="70dip"
         android:orientation="horizontal"
-        android:padding="5dip">
+        android:padding="5dip"
+        android:background="@color/colorPrimary"
+        >
 
 
         <TextView
@@ -39,12 +41,22 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="500dip"
+        android:layout_height="470dip"
         tools:context=".MapsActivity" />
 
-    <android.support.design.widget.BottomNavigationView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="30dip"
+        android:orientation="horizontal"
+        android:background="@color/colorPrimary">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/tiny_bar"
+            />
+
+    </LinearLayout>
 
 
 </LinearLayout>

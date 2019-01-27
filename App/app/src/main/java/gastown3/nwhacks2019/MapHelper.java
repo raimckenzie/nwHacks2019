@@ -26,7 +26,7 @@ public class MapHelper implements RoutingListener {
     }
 
 
-    private void getRouteToMarker(RideEvent[] re){
+    public void getRouteToMarker(RideEvent[] re){
         for (RideEvent r: re) {
             LatLng start = new LatLng(r.startLat, r.startLon);
             LatLng end = new LatLng(r.endLat, r.endLon);

@@ -118,16 +118,13 @@ public class MapsActivity extends AppCompatActivity
 
         Server s = new Server("http://5bcb1df1.ngrok.io/API/");
         s.getRequests(15,15);
-        mServer = new Server("http://5bcb1df1.ngrok.io/API/");
-        try {
-            mServer.requestSignin("asd");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ServerConnectionException e) {
-            e.printStackTrace();
-        }
+
+
 
     }
+
+
+
 
     /**
      * On touch creates an event and tries to read input
@@ -187,6 +184,8 @@ public class MapsActivity extends AppCompatActivity
         getDeviceLocation();
 
         addMarker();
+
+
 
 
     }
@@ -316,6 +315,8 @@ public class MapsActivity extends AppCompatActivity
                             LatLng dest = new LatLng(49.263727, -123.207217);
                             getRouteToMarker(mLatLng, dest);
                             mMap.addMarker(new MarkerOptions().position(dest).title("dest"));
+                            
+
                         } else {
                             System.out.println("no marker added");
                         }
@@ -381,5 +382,25 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onRoutingCancelled() {
 
+    }
+
+    public void getRouteToMarker2(RideEvent[] re){
+        for (RideEvent r: re) {
+            System.out.println(r.startLat + " ASDD" +  r.endLat);
+            LatLng start = new LatLng(r.startLat, r.startLon);
+            LatLng end = new LatLng(r.endLat, r.endLon);
+            mMap.addMarker(new MarkerOptions().position(start).title("start"));
+            mMap.addMarker(new MarkerOptions().position(end).title("dest"));
+            System.out.println("added these markers!");
+
+            Routing routing = new Routing.Builder()
+                    .key("AIzaSyCvFJPm0uOdnWAbf7J6EVYtxKanC1r4xfc")
+                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .withListener(this)
+                    .alternativeRoutes(false)
+                    .waypoints(start, end)
+                    .build();
+            routing.execute();
+        }
     }
 }

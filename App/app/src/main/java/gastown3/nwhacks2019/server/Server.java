@@ -55,9 +55,9 @@ public class Server {
     }
 
     public RideEvent[] getRequests() {
-        RideEvent re = new RideEvent(32, "Jack Jack", (float) 49.272398, (float) -123.246083, (float) 49.250662, (float) -123.167108);
-        RideEvent r2 = new RideEvent(36, "Rey", (float) 49.270109, (float) -123.252169, (float) 49.263672, (float) -123.213599);
-        RideEvent r3 = new RideEvent(44, "Weasley", (float) 49.262890, (float) -123.251284, (float) 49.259292, (float) -123.194467);
+        RideEvent re = new RideEvent(32, "Jack Jack", (float) -123.246083, (float) 49.272398,  (float) -123.167108, (float) 49.250662);
+        RideEvent r2 = new RideEvent(36, "Rey",(float) -123.252169, (float) 49.270109,  (float) -123.213599, (float) 49.263672);
+        RideEvent r3 = new RideEvent(44, "Weasley", (float) -123.251284, (float) 49.262890, (float) -123.194467, (float) 49.259292);
         RideEvent[] res = new RideEvent[]{re, r2, r3};
         return res;
     }

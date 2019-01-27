@@ -140,14 +140,12 @@ function analyzeRequests(callback) {
 	});
 }
 
-time_start = Date.now();
-analyzeRequests(function(){
-	console.log('Computation complete. Took ' + (Date.now() - time_start) + ' ms.');
-	return;
-});
-
-
 //Recurring task at frequency.
-//setInterval(function() {
-//	analyzeRequests();
-//}, frequency * 1000);
+setInterval(function() {
+	time_start = Date.now();
+	analyzeRequests(function(){
+		console.log('Computation complete. Took ' + (Date.now() - time_start) + ' ms.');
+		console.log('');
+		return;
+	});
+}, frequency * 1000);

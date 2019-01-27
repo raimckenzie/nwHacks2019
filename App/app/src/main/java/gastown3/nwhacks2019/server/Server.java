@@ -12,9 +12,12 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -23,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import gastown3.nwhacks2019.RideEvent;
+import org.json.*;
 
 public class Server {
 
@@ -50,14 +54,32 @@ public class Server {
 
     }
 
-    public String[] getRequests(float lon, float lat) {
+    public RideEvent[] getRequests(float lon, float lat) {
         AsyncRequests caller = new AsyncRequests();
         caller.execute(lon, lat);
         try{
             String json = caller.get();
             System.out.println(json);
-            Type listType = new TypeToken<List<RideEvent>>(){}.getType();
-
+            try {
+                JSONObject obj = new JSONObject(json);
+                JSONObject payload = obj.getJSONObject("payload");
+                JSONArray arr = payload.getJSONArray("result");
+                RideEvent[] rideEvents = new RideEvent[arr.length()];
+                for (int i = 0; i < arr.length(); i++) {
+                    Integer id = arr.getJSONObject(i).getInt("user_id");
+                    String username = arr.getJSONObject(i).getString("username");
+                    float startlon = (float) arr.getJSONObject(i).getDouble("startLocLon");
+                    float startlat = (float) arr.getJSONObject(i).getDouble("startLocLat");
+                    float endlon = (float) arr.getJSONObject(i).getDouble("endLocLon");
+                    float endlat = (float) arr.getJSONObject(i).getDouble("endLocLat");
+                    RideEvent re = new RideEvent(id, username, startlon, startlat, endlon, endlat);
+                    System.out.println(re.toString());
+                    rideEvents[i] = re;
+                }
+                return rideEvents;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
 
         }catch (ExecutionException e) {
@@ -72,12 +94,12 @@ public class Server {
     private class AsyncRequests extends AsyncTask<Float, Void, String> {
         @Override
         protected String doInBackground(Float... floats) {
-            String address = home_URL + "signin";
+            String address = home_URL + "getRequests";
             URL url = null;
             try {
                 url = new URL(address);
             } catch (MalformedURLException e) {
-                return "error";
+                return " url error";
             }
             HttpURLConnection client = null;
             try {
@@ -87,11 +109,12 @@ public class Server {
                 client.setDoOutput(true);
                 client.setDoInput(true);
 
-
                 JSONObject jsonParam = new JSONObject();
+                JSONObject coordss = new JSONObject();
+                coordss.put("lat", floats[0]);
+                coordss.put("lon", floats[1]);
                 jsonParam.put("radius", RADIUS);
-                jsonParam.put("loc.lan", floats[0]);
-                jsonParam.put("loc.lat", floats[1]);
+                jsonParam.put("loc", coordss);
 
                 Log.i("JSON", jsonParam.toString());
                 DataOutputStream os = new DataOutputStream(client.getOutputStream());
@@ -121,7 +144,7 @@ public class Server {
                 }
 
             } catch (IOException error) {
-                return "error";
+                return "IOerror";
             } catch (JSONException e) {
                 e.printStackTrace();
             }finally {

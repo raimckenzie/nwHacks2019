@@ -7,6 +7,8 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import gastown3.nwhacks2019.server.Server;
+
 import static org.junit.Assert.*;
 
 /**
@@ -22,5 +24,8 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("gastown3.nwhacks2019", appContext.getPackageName());
+
+        Server s = new Server("http://590d61d0.ngrok.io/API");
+        s.getRequests(15,15);
     }
 }

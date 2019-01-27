@@ -24,10 +24,12 @@
     <string name="enter_address">Enter Default Address</string>
 
 
-
     <!-- String related to swipe up -->
     <string name="refresh_swipe">Resfresh</string>
     <string name="enter_map">Enter</string>
 
+
+    <!-- String related to otherstuff -->
+    <string name="ride_success">SUCCESSFULLY FOUND RIDE</string>
 
 </resources>

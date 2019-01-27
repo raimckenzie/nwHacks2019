@@ -29,6 +29,10 @@ app.listen(settings.PORT, () => {
  * Initial signon request
  * Requires:
  * 	username(string)
+ * 
+ * Returns:
+ * 	username(string)
+ * 	user_id(int)
  */
 app.post("/api/signin", (req, res, next) => {
 	var param = req.body;
@@ -120,6 +124,16 @@ app.post("/api/signin", (req, res, next) => {
  * 	radius(int)
  * 	loc.lon(float)
  * 	loc.lat(float)
+ * Returns:
+ * 	Array {
+ * 	 id (int)
+ * 	 status (int)
+ *   startLocLon (float)
+ * 	 startLocLat (float)
+ *   endLocLon (float)
+ *   endLocLat (float)
+ *   expire_at (datetime)	
+ *  }
  */
 app.post("/api/getRequests", (req, res, next) => {
 	var param = req.body;
@@ -155,7 +169,6 @@ app.post("/api/getRequests", (req, res, next) => {
 	const lon_1 = loc.lon + (dx / r_earth) * (180 / Math.PI) / Math.cos(loc.lat * Math.PI/180);
 
 	const conn = mysql.createConnection(settings.CONN_INFO);
-	let requestResult = [];
 
 	conn.connect((err) => {
 		if (err) {
@@ -170,8 +183,8 @@ app.post("/api/getRequests", (req, res, next) => {
 		}
 
 		const getRequest = `SELECT * FROM requests WHERE 
-		startLocLon > ${lon_0} AND startLocLon < ${lon_1}
-		AND startLocLat > ${lat_0} AND startLocLat < ${lat_1}`;
+		startLocLon >= ${lon_0} AND startLocLon <= ${lon_1}
+		AND startLocLat >= ${lat_0} AND startLocLat <= ${lat_1}`;
 		
 		conn.query(getRequest, (err, result) => {
 			if (err) {
@@ -184,20 +197,18 @@ app.post("/api/getRequests", (req, res, next) => {
 				conn.end();
 				return;
 			}
-			requestResult = result;
+
+			res.json({
+				status: "OK",
+				message: "All good",
+				payload: {
+					result,
+				},
+			});
 		});
 
 		conn.end();
 	});
-
-	res.json({
-		status: "OK",
-		message: "All good",
-		payload: {
-			requestResult,
-		},
-	});
-	return;
 });
 
 /**
@@ -272,5 +283,90 @@ app.post("/api/requestRide", (req, res, next) => {
 		});
 
 		conn.end();
+	});
+});
+
+app.post("/api/getRideInfo", (req, res) => {
+	const param = req.body;
+
+	if (!("username" in param)) {
+		res.json({
+			status: "ERROR",
+			message: "Insufficient parameters provided.",
+			payload: {},
+		});
+		return;
+	}
+
+	const username = param.username;
+
+	const conn = mysql.createConnection(settings.CONN_INFO);
+	conn.connect((err) => {
+		if (err) {
+			console.log(err);
+			res.json({
+				status: "ERROR",
+				message: "Database error",
+				payload: {},
+			});
+			conn.end();
+			return;
+		}
+
+		const rideIDQuery = `SELECT currentRideID FROM users WHERE username="${username}"`;
+		let currentRideID;
+		let ride;
+
+		conn.query(rideIDQuery, (err, result) => {
+			if (err) {
+				console.log(err);
+				res.json({
+					status: "ERROR",
+					message: "Database error",
+					payload: {},
+				});
+				conn.end();
+				return;
+			}
+			
+			currentRideID = (typeof result[0] === "undefined") ? null : result[0].currentRideID;
+
+			if (currentRideID === null) {
+				res.json({
+					status: "OK",
+					message: "All good",
+					payload: {},
+				});
+				conn.end();
+				return;
+			}
+	
+			const rideQuery = `SELECT * FROM rides WHERE id = ${currentRideID}`;
+	
+			conn.query(rideQuery, (err, result) => {
+				if (err) {
+					console.log(err);
+					res.json({
+						status: "ERROR",
+						message: "Database error",
+						payload: {},
+					});
+					conn.end();
+					return;
+				}
+				
+				ride = result;
+
+				res.json({
+					status: "OK",
+					message: "All good",
+					payload: {
+						ride: ride[0],
+					}
+				});
+
+				conn.end();
+			});
+		});
 	});
 });
